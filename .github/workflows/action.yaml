@@ -1,0 +1,39 @@
+name: My Action
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Run action
+      uses: my-registry/my-action@latest
+      with:
+        commit_message: ${{ github.event.head_commit.message }}
+        commit_sha: ${{ github.sha }}
+        user: ${{ github.actor }}
+        branch: ${{ github.ref }}
+        repo: ${{ github.repository }}
+        runner: ${{ github.hostname }}
+
+    - name: Send message to Slack
+      uses: rtCamp/action-slack-notify@v2
+        curl -X POST -H 'Content-type: application/json' --data '{"text":"Hello, World!"}'
+      env:
+        SLACK_WEBHOOK_URL: https://hooks.slack.com/services/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
+      with:
+        status: ${{ job.status }}
+        fields: |
+          Commit Message: ${{ github.event.head_commit.message }}
+          Commit SHA: ${{ github.sha }}
+          User: ${{ github.actor }}
+          Branch: ${{ github.ref }}
+          Repo: ${{ github.repository }}
+          Runner: ${{ github.hostname }}
